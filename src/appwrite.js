@@ -1,16 +1,17 @@
 import { Client, Databases , ID, Query} from "appwrite";
-
+//Import the environment variables to use them
 const PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID;
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 const COLLECTION_ID = import.meta.env.VITE_APPWRITE_COLLECTION_ID;
 const APPWRITE_ENDPOINT = import.meta.env.VITE_APPWRITE_ENDPOINT;
+//Accessing the database
 const client = new Client()
     .setEndpoint(APPWRITE_ENDPOINT)
     .setProject(PROJECT_ID)
 
 const database = new Databases(client);
 
-
+//Updating the search count runs after every search
 export const updateSearchCount = async (searchTerm, movie) =>{
         //1.Use appwrite sdk to check if search term exists
     try{
@@ -42,6 +43,7 @@ export const updateSearchCount = async (searchTerm, movie) =>{
  
 }
 
+//Access the trending movies by selecting the 5 movies with the highest count in the database
 export const getTrendingMovies = async()=>{
     try{
         const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [

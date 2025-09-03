@@ -1,5 +1,6 @@
 import React from 'react'
 
+//This component uses the API data to display each movie
 const MovieCard = ({movie:
     {title,vote_average, poster_path, release_date,original_language}
 }) => {

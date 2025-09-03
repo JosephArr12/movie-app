@@ -19,8 +19,9 @@ const API_OPTIONS ={
 
 const App = () => {
 
+  //All the states for the app
   const [searchTerm, setSearchTerm] = useState('')
-  const[errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
@@ -29,10 +30,13 @@ const App = () => {
   //Debound the search term to prevent users making too many API requests
   //Waits for the user to stop typing for 1000ms
   useDebounce(()=>setDebouncedSearchTerm(searchTerm), 1000, [searchTerm])
+
+  //Fetches the movies from the TMDB API
   const fetchMovies = async(query = '')=>{
     setIsLoading(true);
     setErrorMessage('');
     try{
+      //The search is for the most popular movies
       const endpoint = query
       ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
       :`${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
@@ -40,6 +44,7 @@ const App = () => {
       if(!response.ok){
         throw new Error("Failed to fetch movies");
       }
+      //Assign the data
       const data = await response.json();
       if(data.Response === 'False'){
         setErrorMessage(data.Error || 'Failed to fetch movies');
@@ -47,8 +52,10 @@ const App = () => {
         return;
       }
       console.log(data);
+      //Updating the movie list state
       setMovieList(data.results || []);
       if(query && data.results.length>0){
+        //update the database
         await updateSearchCount(query, data.results[0]);
       }
     }
@@ -60,6 +67,7 @@ const App = () => {
     }
   }
 
+  //loading the trending movies, this only happens when page first loads
   const loadTrendingMovies = async ()=>{
     try{
       const movies = await getTrendingMovies();
@@ -70,10 +78,12 @@ const App = () => {
     }
   }
 
+  //update the page when the user searches
   useEffect(()=>{
     fetchMovies(debouncedSearchTerm);
   }, [debouncedSearchTerm])
   
+  //Load the trending movies on page load
   useEffect(()=>{
     loadTrendingMovies();
   },[])
